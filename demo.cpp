@@ -3,13 +3,19 @@
 #include<vector>
 #include<iterator>
 #include<fstream>
+#include<chrono>
 using namespace std;
 
+//function prototype
+static string timer();
+
+//functions
 void sendmsg(vector<string> &msgvec){
     string msg;
     cout<<"Enter your message:";
     getline(cin,msg);
     msgvec.push_back(msg);
+    cout<<"Message sent!"<<"at"<<timer();
 }
 void viewmsg(vector<string> &msgvec){
     for(auto itr=msgvec.begin();itr != msgvec.end();){
@@ -17,8 +23,7 @@ void viewmsg(vector<string> &msgvec){
     cout<<"\n";
     itr++;
     }
-}   
-
+}  
 void savemsg(vector<string> &msgvec){
     ofstream savefile;
     savefile.open("messages.txt");
@@ -36,7 +41,6 @@ void loadmsg(vector<string> &msgvec){
         msgvec.push_back(messages);
     }
 }
-
 void menu(){
     cout<<"-----MENU-----\n";
     cout<<"1.Send Messages.\n";
@@ -44,10 +48,18 @@ void menu(){
     cout<<"3.Save & Exit\n";
     cout<<"Enter your choice:";
 }
+static string timer(){
+    const auto now = chrono::system_clock::now();
+    time_t t= chrono::system_clock::to_time_t(now);
+    string timestamp=std::ctime(&t);
+    return timestamp;
+}
+
 int main(){
     int choice;
-    vector<string> msgvec;
-    loadmsg(msgvec);
+    timer();
+    vector<string> msgvec;   //vector creation
+    
     do{
     menu();
     cin>>choice;
