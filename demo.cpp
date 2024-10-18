@@ -9,36 +9,44 @@ using namespace std;
 //function prototype
 static string timer();
 
+//message structure
+struct msgstruct{
+string message;
+string timestamp;
+//constructor
+msgstruct(string a,string b) : message(a),timestamp(b){}
+};
+
 //functions
-void sendmsg(vector<string> &msgvec){
+void sendmsg(vector<msgstruct> &msgvec){
     string msg;
     cout<<"Enter your message:";
     getline(cin,msg);
-    msgvec.push_back(msg);
-    cout<<"Message sent!"<<"at"<<timer();
+    msgvec.push_back(msgstruct(msg,timer()));
+    cout<<"Message sent at "<<timer();
 }
-void viewmsg(vector<string> &msgvec){
+void viewmsg(vector<msgstruct> &msgvec){
     for(auto itr=msgvec.begin();itr != msgvec.end();){
-    cout<<*itr;
+    cout<<itr->message<<" "<<"["<<itr->timestamp<<"]";
     cout<<"\n";
     itr++;
     }
 }  
-void savemsg(vector<string> &msgvec){
+void savemsg(vector<msgstruct> &msgvec){
     ofstream savefile;
     savefile.open("messages.txt");
     for(const auto &msg : msgvec){
-        savefile<<msg<<endl;
+        savefile<<msg.message+msg.timestamp<<endl;
         msgvec.pop_back();
     }
     savefile.close();
 }
-void loadmsg(vector<string> &msgvec){
+void loadmsg(vector<msgstruct> &msgvec){
     string messages;
     ifstream loadfile;
     loadfile.open("messages.txt");
     while(getline(loadfile,messages)){
-        msgvec.push_back(messages);
+        msgvec.push_back(msgstruct(messages,timer()));
     }
 }
 void menu(){
@@ -58,8 +66,8 @@ static string timer(){
 int main(){
     int choice;
     timer();
-    vector<string> msgvec;   //vector creation
-    
+    vector<msgstruct> msgvec;   //vector creation
+
     do{
     menu();
     cin>>choice;
