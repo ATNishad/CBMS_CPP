@@ -7,6 +7,7 @@
 #include <algorithm>
 using namespace std;
 
+namespace msg_handling{
 // Message structure
 struct msgstruct {
     string message;
@@ -109,15 +110,15 @@ void msg_menu() {
         cout << "5. Save & Exit.\n";
         cout << "Enter your choice: ";
     }
+}
 
-
-
+//file handling main
 int main() {
     int choice;
-    vector<msgstruct> msgvec; // Vector creation
+    vector<msg_handling::msgstruct> msgvec; // Vector creation
 
     do {
-        msg_menu();
+        msg_handling::msg_menu();
         cin >> choice;
         cin.ignore(); // Clear newline from the input buffer
         switch (choice) {

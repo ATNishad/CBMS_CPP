@@ -6,10 +6,12 @@
 #include <algorithm>
 using namespace std;
 
-void user_Register(vector<string> &users);
-void user_LOGIN(vector<string> &users);
-void user_View(vector<string> &users);
+namespace user_handling{
+void user_Register(vector<string> &usersvec);
+void user_Login(vector<string> &usersvec);
+void user_View(vector<string> &usersvec);
 
+//user menu
 void user_menu(){
   cout<<"\n";
   cout<<"-----MENU-----\n";
@@ -21,38 +23,64 @@ void user_menu(){
 }
 
 //function to register new user
-void user_Register(vector<string> &users){
+void user_Register(vector<string> &usersvec){
   string username;
   cout<<"Enter username:";
   getline(cin,username);
-  users.push_back(username);
+  usersvec.push_back(username);
+  cout<<"User "<<"["<<username<<"]"<<" registered successfully!";
 }
-void user_LOGIN(vector<string> &users){}
-void user_View(vector<string> &users){
-  for(auto itr = users.begin(); itr != users.end();){
-    cout<<*itr;
+//function to login
+void user_Login(vector<string> &usersvec,bool &user_logged){
+  string username;
+  cin.ignore();
+  cout<<"Enter your username:";
+  getline(cin,username);
+  for(auto itr_user : usersvec){
+    if(itr_user == username){
+      user_logged = true;
+      cout<<"Logged in successfully!!\n";
+      return;
+    }
+  }
+    user_logged = false;
+    cout<<"Can\'t Login!,Check username\n";
+  }
+//function to list users
+void user_View(vector<string> &usersvec){
+  for(auto itr : usersvec){
+    cout<<itr;
     cout<<"\n";
   }
 }
 
+}
+
+//user_handling main
 int main(){
   int user_choice;
-  vector<string> users;
+  bool user_Logged;
+  vector<string> usersvec;
   do{
-  user_menu();
+  user_handling::user_menu();
   cin>>user_choice;
   cin.ignore();
   switch(user_choice){
     case 1:
-    user_Register(users);
+    user_handling::user_Register(usersvec);
     break;
+
     case 2:
+    user_handling::user_Login(usersvec,user_Logged);
     break;
+
     case 3:
-    user_View(users);
+    user_handling::user_View(usersvec);
     break;
+
     case 4:
     break;
+
     default:
     cout<<"Invalid choice!!";
   }
