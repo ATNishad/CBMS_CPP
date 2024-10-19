@@ -86,3 +86,9 @@ int main(){
   }
   }while(user_choice!=4);
 }
+
+
+/*struct user_n_msg{
+string username;
+vector<msg_handling::msgstruct> user_and_msg_vec;
+};*/
