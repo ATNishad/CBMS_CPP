@@ -52,7 +52,7 @@ void editmsg(vector<msgstruct>& msgvec) {
     for (int i = 0; i < msgvec.size(); i++) {
         cout << "[" << i << "] " << msgvec[i].message << " " << msgvec[i].timestamp << "\n";
     }
-    cout << "Enter message index: ";
+    cout << "Enter index to be edited: ";
     cin >> index;
     cin.ignore();
     cout << "Enter new message: ";
@@ -61,12 +61,24 @@ void editmsg(vector<msgstruct>& msgvec) {
     cout << "Edited successfully!\n";
 }
 
+void delmsg(vector<msgstruct> &msgvec){
+    int index;
+    for (int i = 0; i < msgvec.size(); i++) {
+        cout << "[" << i << "] " << msgvec[i].message << " " << msgvec[i].timestamp << "\n";
+    }
+    cout<<"Select the index to be deleted:";
+    cin>>index;
+    msgvec.erase(msgvec.begin() + index);
+    cout<<"Message at index "<<"["<<index<<"]"<<"has been deleted!";
+}
+
 // Function to display the menu
 void menu() {
     cout << "\n-----MENU-----\n";
     cout << "1. Send Messages.\n";
     cout << "2. View Messages.\n";
     cout << "3. Edit Message.\n";
-    cout << "4. Save & Exit\n";
+    cout << "4. Delete Message.\n";
+    cout << "5. Save & Exit.\n";
     cout << "Enter your choice: ";
 }

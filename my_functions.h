@@ -7,6 +7,7 @@
 #include <iterator>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -27,6 +28,7 @@ void viewmsg(const vector<msgstruct> &msgvec);
 void savemsg(const vector<msgstruct> &msgvec);
 void loadmsg(vector<msgstruct> &msgvec);
 void editmsg(vector<msgstruct> &msgvec);
+void delmsg(vector<msgstruct> &msgvec);
 void menu();
 
 #endif // MESSAGE_MANAGER_H

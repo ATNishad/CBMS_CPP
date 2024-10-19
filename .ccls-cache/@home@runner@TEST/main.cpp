@@ -19,13 +19,16 @@ int main() {
                 editmsg(msgvec);
                 break;
             case 4:
+                delmsg(msgvec);
+                break;
+            case 5:
                 savemsg(msgvec);
                 cout << "Messages have been saved!!\n";
                 break;
             default:
                 cout << "Invalid choice! Please try again.\n";
         }
-    } while (choice != 4);
+    } while (choice != 5);
 
     return 0;
 }
