@@ -61,7 +61,9 @@ void editmsg(vector<msgstruct>& msgvec) {
     cout << "Edited successfully!\n";
 }
 
+//function to delete message
 void delmsg(vector<msgstruct> &msgvec){
+    cout<<"\n";
     int index;
     for (int i = 0; i < msgvec.size(); i++) {
         cout << "[" << i << "] " << msgvec[i].message << " " << msgvec[i].timestamp << "\n";
@@ -69,7 +71,7 @@ void delmsg(vector<msgstruct> &msgvec){
     cout<<"Select the index to be deleted:";
     cin>>index;
     msgvec.erase(msgvec.begin() + index);
-    cout<<"Message at index "<<"["<<index<<"]"<<"has been deleted!";
+    cout<<"Message at index "<<"["<<index<<"]"<<"has been deleted!\n";
 }
 
 // Function to display the menu
