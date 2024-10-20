@@ -5,23 +5,20 @@
 #include <vector>
 using namespace std;
 
-struct message {
-  string sender;
+struct message_structure {
   string content;
   string timestamp;
-
-  void set_sender(string &name) { this->sender = name; }
-  void set_content(string &content) { this->content = content; }
-  void set_timestamp(string &timestamp) { this->timestamp = timestamp; }
+  message_structure(string A, string B) : content(A), timestamp(B) {}
 };
+struct sender_structure {
+  string username;
+  vector<message_structure> message;
 
-const string timer() {
-  const auto now = chrono::system_clock::now();
-  time_t t = chrono::system_clock::to_time_t(now);
-  string timestamp = std::ctime(&t);
-  timestamp.pop_back();
-  return timestamp;
-}
+  void set_sender(string name) { this->username = name; }
+  void set_message(string content, string timestamp) {
+    message.push_back((message_structure(content, timestamp)));
+  }
+};
 
 void user_menu() {
   cout << "\n";
@@ -42,69 +39,47 @@ void msg_menu() {
   cout << "Enter your choice: ";
 }
 
-void user_register(vector<message> &UM_VEC, message &msgObject) {
-  string username;
+void user_register(vector<sender_structure> &sender_vector) {
+  string name;
   cout << "Enter name to register:";
-  getline(cin, username);
-  msgObject.set_sender(username);
-  UM_VEC.push_back(msgObject);
+  getline(cin, name);
+  sender_structure sender_object;
+  sender_object.set_sender(name);
+  sender_vector.push_back(sender_object);
 }
-void user_login(vector<message> &UM_VEC, bool &global_user_logged,string &logged_user) {
+
+void user_login(vector<sender_structure> sender_vector,bool &global_user_logged,sender_structure *&current_user_pointer) {
   string username;
-  bool logged_in = false;
-  do {
-    cout << "Enter username to login:";
-    getline(cin, username);
-    for (auto &itr : UM_VEC) {
-      if (itr.sender == username) {
-        logged_in = true;
-        logged_user=username;
-        global_user_logged = true;
-        cout << "Logged in successfully!!\n";
-        break;
-      }
-    }
-    if (!logged_in) {
-      cout << "Failed to Login, Try Again!\n";
-    }
-  } while (!logged_in);
-}
-void user_display(vector<message> UM_VEC) {
-  for (auto itr : UM_VEC) {
-    cout << itr.sender;
-    cout << ",";
-  }
-  cout << "\n";
-}
-
-void send_msg(vector<message> &UM_VEC,message &msgObject,string logged_user){
-  string content;
-  cout<<"Enter message to sent:";
+  cout << "Enter your username:";
   cin.ignore();
-  getline(cin,content);
-  for(auto itr = UM_VEC.begin();itr != UM_VEC.end(); ++itr){
-    if(itr->sender == logged_user){
-      itr->content= content;
-      itr->timestamp = timer();
-      cout<<"Message sent!! at "<<"["<<itr->timestamp<<"]";
-    }
-  }
-}
-void view_msg(vector<message> UM_VEC,string logged_user){
-  for(auto itr = UM_VEC.begin();itr != UM_VEC.end();++itr){
-    if(itr->sender == logged_user){
-      cout<<itr->content<<" "<<"["<<itr->timestamp<<"]";
+  getline(cin, username);
+  for (auto itr = sender_vector.begin(); itr != sender_vector.end(); ++itr) {
+    if (itr->username == username) {
+      current_user_pointer = &(*itr);
+      global_user_logged = true;
     }
   }
 }
 
+void user_display(vector<sender_structure> sender_vector){
+for(auto itr : sender_vector){
+  cout<<itr.username;
+  cout<<",";
+}
+  cout<<"\n";
+}
+
+void send_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
+  string content;
+  cout<<"Enter message:";
+  getline(cin,content);
+}
 
 int main() {
   int user_choice;
-  vector<message> UM_VEC;
-  message msgObject;
-  bool global_user_logged = false;
-  string logged_user;
+  vector<sender_structure> sender_vector;
+  bool global_user_logged;
+  sender_structure *current_user_pointer = nullptr;
 
   // user_menu_do
   do {
@@ -113,35 +88,40 @@ int main() {
     cin.ignore();
     switch (user_choice) {
     case 1:
-      user_register(UM_VEC, msgObject);
+      user_register(sender_vector);
       break;
 
     case 2:
-      user_login(UM_VEC, global_user_logged,logged_user);
-      user_choice = 4;
+      user_login(sender_vector, global_user_logged, current_user_pointer);
       break;
 
     case 3:
-      user_display(UM_VEC);
+      user_display(sender_vector);
       break;
-
-    default:
-      cout << "INVALID CHOICE!!\n";
+    case 4:
+      cout << "Exited program.";
+      return 0;
     }
-  } while (user_choice != 4 && !global_user_logged);
+  } while (!global_user_logged);
 
   int msg_choice;
   do {
     msg_menu();
     cin >> msg_choice;
     switch (msg_choice) {
-    case 1:
-      send_msg(UM_VEC,msgObject,logged_user);
+      case 1:
+      send_message(sender_vector,current_user_pointer);
       break;
-    case 2:
-      view_msg(UM_VEC,logged_user);
+      case 2:
       break;
-    case 3:
+      
+      case 3:
+      break;
+      
+      case 4:
+      break;
+    
+      case 5:
       break;
     }
   } while (msg_choice != 5);
