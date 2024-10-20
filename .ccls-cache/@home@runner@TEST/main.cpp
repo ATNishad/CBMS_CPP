@@ -1,35 +1,35 @@
-#include <fstream>
-#include <iostream>
-#include <iterator>
-#include <string>
-#include <vector>
-#include <algorithm>
+#include<iostream>
+#include<chrono>
+#include<vector>
+#include<algorithm>
+#include<iterator>
 using namespace std;
 
-//structures
-struct msgstruct {
-    string message;
-    string timestamp;
-    // Constructor
-    msgstruct(string a, string b) : message(a), timestamp(b) {}
-};
-struct user_msg_struct{
-string username;
-vector<msgstruct> user_and_msg_vec;
-//constructor
-user_msg_struct(string a,vector<msgstruct> b) : username(a),user_and_msg_vec(b){}
+
+struct message{
+string sender;
+string content;
+string timestamp;
+
+void set_sender(string &name){
+  this->sender=name;
+}
+void set_content(string &content){
+  this->content = content;
+}
+void set_timestamp(string &timestamp){
+  this->timestamp = timestamp;
+}
 };
 
-//function to display menus
-void msg_menu() {
-    cout << "\n-----MENU-----\n";
-    cout << "1. Send Messages.\n";
-    cout << "2. View Messages.\n";
-    cout << "3. Edit Message.\n";
-    cout << "4. Delete Message.\n";
-    cout << "5. Save & Exit.\n";
-    cout << "Enter your choice:";
+const string timer(){
+  const auto now = chrono::system_clock::now();
+  time_t t = chrono::system_clock::to_time_t(now);
+  string timestamp = std::ctime(&t);
+  timestamp.pop_back();
+  return timestamp;
 }
+
 void user_menu(){
   cout<<"\n";
   cout<<"-----MENU-----\n";
@@ -37,69 +37,80 @@ void user_menu(){
   cout<<"2.LOGIN-existing user.\n";
   cout<<"3.Display users.\n";
   cout<<"4.EXIT.\n";
-  cout<<"Enter your choice:";  
+  cout<<"Enter your choice:";
+}
+void msg_menu() {
+  cout << "\n-----MENU-----\n";
+  cout << "1. Send Messages.\n";
+  cout << "2. View Messages.\n";
+  cout << "3. Edit Message.\n";
+  cout << "4. Delete Message.\n";
+  cout << "5. Save & Exit.\n";
+  cout << "Enter your choice: ";
 }
 
-//user handling functions
-void user_Register(vector<user_msg_struct> &um_vec,vector<msgstruct> &msgvec){
-  cout<<"Enter username to register:";
+void user_register(vector<message> &UM_VEC,message &msgObject){
   string username;
-  cin.ignore();
+  cout<<"Enter name to register:";
   getline(cin,username);
-  um_vec.push_back(user_msg_struct(username,msgvec));
+  msgObject.set_sender(username);
+  UM_VEC.push_back(msgObject);
 }
-void user_Login(vector<user_msg_struct> &um_vec,bool &user_logged){
-  string checkname;
-  cin.ignore();
-  while(!user_logged){
-  cout<<"Enter your username:";
-  getline(cin,checkname);
-  user_logged = false;
-  for(auto itr = um_vec.begin();itr != um_vec.end();++itr){
-    if(itr->username == checkname){
-      user_logged=true;
-      cout<<"Logged In successfully\n";
-      msg_menu();
-      break;
-    }
-    }if(!user_logged){
-      cout<<"Failed to login,Try again\n";}
-  }
-  }
-void user_Display(vector<user_msg_struct> um_vec){
-  for(auto itr : um_vec){
-    cout<<itr.username;
+void user_login(vector<message> &UM_VEC,bool &global_user_logged){
+  string username;
+  bool logged_in = false;
+  do{
+  cout<<"Enter username to login:";
+  getline(cin,username);
+  for(auto &itr : UM_VEC){
+    if(itr.sender == username){
+      logged_in = true;
+      global_user_logged = true;
+      cout<<"Logged in successfully!!\n";
+      break;}
+    }if(!logged_in){
+    cout<<"Failed to Login, Try Again!\n";}
+  }while(!logged_in);
+}
+void user_display(vector<message> UM_VEC){
+  for(auto itr : UM_VEC){
+    cout<<itr.sender;
     cout<<",";
   }
+  cout<<"\n";
 }
+
 
 
 
 int main(){
   int user_choice;
-  int msg_choice;
-  bool user_logged;
-  vector<user_msg_struct> um_vec;
-  vector<msgstruct> msgvec;
+  vector<message> UM_VEC;
+  message msgObject;
+  bool global_user_logged = false;
   
+  //user_menu_do
   do{
-  user_menu();
-  cin>>user_choice;
-  switch(user_choice){
-    case 1:
-      user_Register(um_vec,msgvec);
-    break;
+    user_menu();
+    cin>>user_choice;
+    cin.ignore();
+    switch(user_choice){
+      case 1:
+      user_register(UM_VEC,msgObject);
+      break;
+      
+      case 2:
+      user_login(UM_VEC,global_user_logged);
+      user_choice=4;
+      break;
+      
+      case 3:
+      user_display(UM_VEC);
+      break;
 
-    case 2:
-      user_Login(um_vec,user_logged);
-      user_choice = 4;
-      cin>>msg_choice;
-    break;
+      default:
+      cout<<"INVALID CHOICE!!\n";
+    }
+  }while(user_choice != 4 && !global_user_logged);
 
-    case 3:
-      user_Display(um_vec);
-    break;
-
-  }
-}while(user_choice!=4);
 }
