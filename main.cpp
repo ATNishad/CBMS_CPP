@@ -82,15 +82,21 @@ void send_msg(vector<message> &UM_VEC,message &msgObject,string logged_user){
   cout<<"Enter message to sent:";
   cin.ignore();
   getline(cin,content);
-  for(auto itr : UM_VEC){
-    if(itr.sender == logged_user){
-      itr.content= content;
-      itr.timestamp = timer();
-      cout<<"Message sent!!\n";
+  for(auto itr = UM_VEC.begin();itr != UM_VEC.end(); ++itr){
+    if(itr->sender == logged_user){
+      itr->content= content;
+      itr->timestamp = timer();
+      cout<<"Message sent!! at "<<"["<<itr->timestamp<<"]";
     }
   }
 }
-
+void view_msg(vector<message> UM_VEC,string logged_user){
+  for(auto itr = UM_VEC.begin();itr != UM_VEC.end();++itr){
+    if(itr->sender == logged_user){
+      cout<<itr->content<<" "<<"["<<itr->timestamp<<"]";
+    }
+  }
+}
 
 
 int main() {
@@ -133,6 +139,7 @@ int main() {
       send_msg(UM_VEC,msgObject,logged_user);
       break;
     case 2:
+      view_msg(UM_VEC,logged_user);
       break;
     case 3:
       break;
