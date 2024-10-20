@@ -13,6 +13,7 @@ void user_View(vector<string> &usersvec);
 
 //user menu
 void user_menu(){
+  
   cout<<"\n";
   cout<<"-----MENU-----\n";
   cout<<"1.REGISTER-new user.\n";
