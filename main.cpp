@@ -83,10 +83,10 @@ void send_message(vector<sender_structure> &sender_vector,sender_structure* &cur
   cout<<"Enter message:";
   getline(cin,content);
   current_user_pointer->set_message(content,timer());
-  cout<<"Message sent successfully!";
+  cout<<"Message sent successfully!\n";
 }
 
-void view_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+const void view_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
   for(const auto itr : sender_vector){
     if(itr.username == current_user_pointer->username){
       for(const auto itr : current_user_pointer->message )
@@ -95,11 +95,35 @@ void view_message(vector<sender_structure> &sender_vector,sender_structure* &cur
   }
 }
 
+void edit_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+  int display_index = 0;
+  int edit_index;
+  string content;
+
+  for(auto itr = current_user_pointer->message.begin();itr != current_user_pointer->message.end();++itr , display_index++){
+    cout<<"["<<display_index<<"]"<<itr->content;
+    cout<<"\n";
+  }
+
+  cout<<"Enter message index to edit:";
+  cin>>edit_index;
+  cin.ignore();
+  cout<<"Enter new message:";
+  getline(cin,content);
+  int index = 0;
+  for(auto &itr : current_user_pointer->message){
+    if(index == edit_index){
+      itr.content = content;
+      cout<<"Message edited successfully!\n";
+    }index++;
+  }
+}
 
 int main() {
   int user_choice;
-  vector<sender_structure> sender_vector;
+  int msg_choice;
   bool global_user_logged = false;
+  vector<sender_structure> sender_vector;
   sender_structure *current_user_pointer = nullptr;
 
   // user_menu_do
@@ -132,7 +156,6 @@ int main() {
   } while (!global_user_logged);
 
 //msg menu do
-  int msg_choice;
   do {
     msg_menu();
     cin >> msg_choice;
@@ -147,6 +170,7 @@ int main() {
       break;
       
       case 3:
+      edit_message(sender_vector,current_user_pointer);
       break;
       
       case 4:
