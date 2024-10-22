@@ -78,7 +78,7 @@ for(const auto itr : sender_vector){
   cout<<"\n";
 }
 
-void send_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+void send_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
   string content;
   cout<<"Enter message:";
   getline(cin,content);
@@ -86,7 +86,7 @@ void send_message(vector<sender_structure> &sender_vector,sender_structure* &cur
   cout<<"Message sent successfully!\n";
 }
 
-const void view_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+const void view_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
   for(const auto itr : sender_vector){
     if(itr.username == current_user_pointer->username){
       for(const auto itr : current_user_pointer->message )
@@ -95,16 +95,14 @@ const void view_message(vector<sender_structure> &sender_vector,sender_structure
   }
 }
 
-void edit_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+void edit_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
   int display_index = 0;
   int edit_index;
   string content;
-
   for(auto itr = current_user_pointer->message.begin();itr != current_user_pointer->message.end();++itr , display_index++){
     cout<<"["<<display_index<<"]"<<itr->content;
     cout<<"\n";
   }
-
   cout<<"Enter message index to edit:";
   cin>>edit_index;
   cin.ignore();
@@ -118,6 +116,27 @@ void edit_message(vector<sender_structure> &sender_vector,sender_structure* &cur
     }index++;
   }
 }
+
+void delete_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+  int display_index = 0;
+  int delete_index;
+  string content;
+  for(auto itr = current_user_pointer->message.begin();itr != current_user_pointer->message.end();++itr , display_index++){
+    cout<<"["<<display_index<<"]"<<itr->content;
+    cout<<"\n";
+  }
+
+  cout<<"Enter message index to delete:";
+  cin>>delete_index;
+  int index = 0;
+  for(auto &itr : current_user_pointer->message){
+    if(index == delete_index){
+      current_user_pointer->message.erase(current_user_pointer->message.begin() + delete_index);
+      cout<<"Message deleted successfully!\n";
+    }index++;
+  }
+}
+
 
 int main() {
   int user_choice;
@@ -139,10 +158,10 @@ int main() {
     case 2:
       user_login(sender_vector, global_user_logged, current_user_pointer);
       if(global_user_logged){
-      cout<<"LOGIN SUCCESSFULL!";
+      cout<<"LOGIN SUCCESSFULL!\n";
       }
       else{
-        cout<<"LOGIN FAILED!";
+        cout<<"LOGIN FAILED!\n";
       }
       break;
 
@@ -174,6 +193,7 @@ int main() {
       break;
       
       case 4:
+      delete_message(sender_vector,current_user_pointer);
       break;
     
       case 5:
@@ -181,3 +201,5 @@ int main() {
     }
   } while (msg_choice != 5);
 }
+
+
