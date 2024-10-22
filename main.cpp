@@ -20,6 +20,14 @@ struct sender_structure {
   }
 };
 
+const string timer() {
+  const auto now = chrono::system_clock::now();
+  time_t t = chrono::system_clock::to_time_t(now);
+  string timestamp = std::ctime(&t);
+  timestamp.pop_back();
+  return timestamp;
+}
+
 void user_menu() {
   cout << "\n";
   cout << "-----MENU-----\n";
@@ -48,37 +56,50 @@ void user_register(vector<sender_structure> &sender_vector) {
   sender_vector.push_back(sender_object);
 }
 
-void user_login(vector<sender_structure> sender_vector,bool &global_user_logged,sender_structure *&current_user_pointer) {
+void user_login(vector<sender_structure> &sender_vector,bool &global_user_logged,sender_structure *&current_user_pointer) {
   string username;
   cout << "Enter your username:";
-  cin.ignore();
   getline(cin, username);
-  for (auto itr = sender_vector.begin(); itr != sender_vector.end(); ++itr) {
-    if (itr->username == username) {
-      current_user_pointer = &(*itr);
+  for (auto &sender : sender_vector) {
+    if (sender.username == username) {
+      current_user_pointer = &sender;
       global_user_logged = true;
+      return;
     }
   }
+  global_user_logged = false;
 }
 
-void user_display(vector<sender_structure> sender_vector){
-for(auto itr : sender_vector){
+const void user_display(const vector<sender_structure> &sender_vector){
+for(const auto itr : sender_vector){
   cout<<itr.username;
   cout<<",";
 }
   cout<<"\n";
 }
 
-void send_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
+void send_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
   string content;
   cout<<"Enter message:";
   getline(cin,content);
+  current_user_pointer->set_message(content,timer());
+  cout<<"Message sent successfully!";
 }
+
+void view_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+  for(const auto itr : sender_vector){
+    if(itr.username == current_user_pointer->username){
+      for(const auto itr : current_user_pointer->message )
+      cout<<itr.content<<" "<<"["<<itr.timestamp<<"]"<<"\n";
+    }
+  }
+}
+
 
 int main() {
   int user_choice;
   vector<sender_structure> sender_vector;
-  bool global_user_logged;
+  bool global_user_logged = false;
   sender_structure *current_user_pointer = nullptr;
 
   // user_menu_do
@@ -93,6 +114,12 @@ int main() {
 
     case 2:
       user_login(sender_vector, global_user_logged, current_user_pointer);
+      if(global_user_logged){
+      cout<<"LOGIN SUCCESSFULL!";
+      }
+      else{
+        cout<<"LOGIN FAILED!";
+      }
       break;
 
     case 3:
@@ -104,15 +131,19 @@ int main() {
     }
   } while (!global_user_logged);
 
+//msg menu do
   int msg_choice;
   do {
     msg_menu();
     cin >> msg_choice;
+    cin.ignore();
     switch (msg_choice) {
       case 1:
       send_message(sender_vector,current_user_pointer);
       break;
+
       case 2:
+      view_message(sender_vector,current_user_pointer);
       break;
       
       case 3:
