@@ -135,6 +135,20 @@ void delete_message(vector<sender_structure> &sender_vector,sender_structure* cu
   }
 }
 
+void search_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
+  string keyword;
+  cout<<"Enter keyword to search:";
+  getline(cin,keyword);
+  for(const auto &msg : current_user_pointer->message){
+    if(msg.content.find(keyword) != string::npos){
+    cout<<"message found:"<<msg.content<<"["<<msg.timestamp<<"]"<<"\n";
+    }
+    else{
+      cout<<"message not found\n";
+    }
+  }
+}
+
 void savefile(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
   ofstream savefilestream;
   savefilestream.open("messages.txt");
@@ -176,13 +190,14 @@ void user_menu() {
   cout << "Enter your choice:";
 }
 void msg_menu() {
-  cout << "\n-----MENU-----\n";
-  cout << "1. Send Messages.\n";
-  cout << "2. View Messages.\n";
-  cout << "3. Edit Message.\n";
-  cout << "4. Delete Message.\n";
-  cout << "5. Save & Exit.\n";
-  cout << "Enter your choice: ";
+  cout<<"\n-----MENU-----\n";
+  cout<<"1.Send Messages.\n";
+  cout<<"2.View Messages.\n";
+  cout<<"3.Search Message.\n";
+  cout<<"4.Edit Message.\n";
+  cout<<"5.Delete Message.\n";
+  cout<<"6.Save & Exit.\n";
+  cout<<"Enter your choice: ";
 }
 
 
@@ -196,8 +211,6 @@ int main() {
   
   userHandling userHandlingObject;
   messageHandling messageHandlingObject;
-
-
   
   // user_menu_do
   do {
@@ -223,13 +236,13 @@ int main() {
     case 3:
       userHandlingObject.user_display(sender_vector);
       break;
-    case 4:
+    case 5:
       cout << "Exited program.";
       return 0;
     }
   } while (!global_user_logged);
 
-//msg menu do
+  //msg_menu_do
   do {
     msg_menu();
     cin >> msg_choice;
@@ -244,18 +257,22 @@ int main() {
       break;
       
       case 3:
+      messageHandlingObject.search_message(sender_vector,current_user_pointer);
+      break;
+
+      case 4:
       messageHandlingObject.edit_message(sender_vector,current_user_pointer);
       break;
       
-      case 4:
+      case 5:
       messageHandlingObject.delete_message(sender_vector,current_user_pointer);
       break;
     
-      case 5:
+      case 6:
       messageHandlingObject.savefile(sender_vector,current_user_pointer);
       break;
     }
-  } while (msg_choice != 5);
+  } while (msg_choice != 6);
 }
 
 
