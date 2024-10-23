@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include<fstream>
 using namespace std;
 
 struct message_structure {
@@ -117,7 +118,7 @@ void edit_message(vector<sender_structure> &sender_vector,sender_structure* curr
   }
 }
 
-void delete_message(vector<sender_structure> &sender_vector,sender_structure* &current_user_pointer){
+void delete_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
   int display_index = 0;
   int delete_index;
   string content;
@@ -136,6 +137,36 @@ void delete_message(vector<sender_structure> &sender_vector,sender_structure* &c
     }index++;
   }
 }
+
+void savefile(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
+  ofstream savefilestream;
+  savefilestream.open("messages.txt");
+  for(const auto itr : current_user_pointer->message){
+  savefilestream<<itr.content<<"|"<<itr.timestamp<<"\n";
+  }
+  savefilestream.close();
+  cout<<"File saved!";
+}
+
+void loadfile(vector<sender_structure> &sender_vec, sender_structure* current_user_pointer) {
+    string content, timestamp, lineread;
+    ifstream loadfilestream("messages.txt");
+    if (!loadfilestream.is_open()) {
+        cout << "Failed to load messages" << endl;
+        return;
+    }
+    while(getline(loadfilestream, lineread)) {
+        size_t delimiter_position = lineread.find("|");
+        if (delimiter_position != string::npos) { 
+            content = lineread.substr(0, delimiter_position);
+            timestamp = lineread.substr(delimiter_position + 1);
+            current_user_pointer->set_message(content, timestamp);
+        }
+    }
+    loadfilestream.close();
+    cout << "Messages loaded!" << endl;
+}
+
 
 
 int main() {
@@ -158,6 +189,7 @@ int main() {
     case 2:
       user_login(sender_vector, global_user_logged, current_user_pointer);
       if(global_user_logged){
+      loadfile(sender_vector,current_user_pointer);
       cout<<"LOGIN SUCCESSFULL!\n";
       }
       else{
@@ -197,6 +229,7 @@ int main() {
       break;
     
       case 5:
+      savefile(sender_vector,current_user_pointer);
       break;
     }
   } while (msg_choice != 5);
