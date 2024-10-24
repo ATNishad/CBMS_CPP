@@ -23,20 +23,37 @@ struct sender_structure {
 
 class userHandling{
 public:
+
+//used this function inside user_register
+const bool name_check(const vector<sender_structure> &sender_vector,string name){
+for(const auto &itr : sender_vector){
+if (name ==  itr.username){
+  return true;
+  }
+}
+return false;
+}
+
 void user_register(vector<sender_structure> &sender_vector) {
   string name;
   while(true){
   cout << "Enter name to register:";
   getline(cin, name);
-  if(!name.empty()){
+  
+  if(name.empty()){
+    cout<<"Enter valid name to register!!\n";
+  }
+
+  else if(name_check(sender_vector,name)){
+    cout<<"Username already exists.Try with a different name.\n";
+  }
+
+  else{
   sender_structure sender_object;
   sender_object.set_sender(name);
   sender_vector.push_back(sender_object);
   cout<<"Registered successfully!\n";
   break;
-  }
-  else{
-    cout<<"Enter valid name to register!!\n";
   }
 }
 }
@@ -62,6 +79,7 @@ for(const auto itr : sender_vector){
 }
   cout<<"\n";
 }
+
 
 };
 
@@ -137,21 +155,23 @@ void delete_message(vector<sender_structure> &sender_vector,sender_structure* cu
 
 void search_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
   string keyword;
+  bool keyword_found = false;
   cout<<"Enter keyword to search:";
   getline(cin,keyword);
   for(const auto &msg : current_user_pointer->message){
     if(msg.content.find(keyword) != string::npos){
     cout<<"message found:"<<msg.content<<"["<<msg.timestamp<<"]"<<"\n";
-    }
-    else{
-      cout<<"message not found\n";
+    keyword_found=true;
     }
   }
+if(!keyword_found){
+cout<<"message with \'"<<keyword<<"\' not found\n";
+}
 }
 
 void savefile(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
   ofstream savefilestream;
-  savefilestream.open("messages.txt");
+  savefilestream.open(current_user_pointer->username+"_messages.txt");
   for(const auto itr : current_user_pointer->message){
   savefilestream<<itr.content<<"|"<<itr.timestamp<<"\n";
   }
@@ -161,7 +181,7 @@ void savefile(vector<sender_structure> &sender_vector,sender_structure* current_
 
 void loadfile(vector<sender_structure> &sender_vec, sender_structure* current_user_pointer) {
     string content, timestamp, lineread;
-    ifstream loadfilestream("messages.txt");
+    ifstream loadfilestream(current_user_pointer->username+"_messages.txt");
     if (!loadfilestream.is_open()) {
         cout << "Failed to load messages" << endl;
         return;
@@ -199,7 +219,6 @@ void msg_menu() {
   cout<<"6.Save & Exit.\n";
   cout<<"Enter your choice: ";
 }
-
 
 
 int main() {
