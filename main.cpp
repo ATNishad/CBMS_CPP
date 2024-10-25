@@ -3,295 +3,335 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
-#include<fstream>
+#include <fstream>
 using namespace std;
 
 struct message_structure {
-  string content;
-  string timestamp;
-  message_structure(string A, string B) : content(A), timestamp(B) {}
+    string content;
+    string timestamp;
+    message_structure(string A,string B) : content(A), timestamp(B) {}
 };
+
 struct sender_structure {
-  string username;
-  vector<message_structure> message;
+    string username;
+    vector<message_structure> inbox;
+    vector<message_structure> message;
 
-  void set_sender(string name) { this->username = name; }
-  void set_message(string content, string timestamp) {
-    message.push_back((message_structure(content, timestamp)));
-  }
+    void set_sender(string name) { this->username=name; }
+    void set_message(string content, string timestamp) {
+        message.push_back((message_structure(content,timestamp)));
+    }
+    void set_inbox(string content,string timestamp){
+      inbox.push_back(message_structure(content,timestamp));
+    }
 };
 
-class userHandling{
+class userHandling {
 public:
 
-//used this function inside user_register
-const bool name_check(const vector<sender_structure> &sender_vector,string name){
-for(const auto &itr : sender_vector){
-if (name ==  itr.username){
-  return true;
-  }
-}
-return false;
-}
-
-void user_register(vector<sender_structure> &sender_vector) {
-  string name;
-  while(true){
-  cout << "Enter name to register:";
-  getline(cin, name);
-  
-  if(name.empty()){
-    cout<<"Enter valid name to register!!\n";
-  }
-
-  else if(name_check(sender_vector,name)){
-    cout<<"Username already exists.Try with a different name.\n";
-  }
-
-  else{
-  sender_structure sender_object;
-  sender_object.set_sender(name);
-  sender_vector.push_back(sender_object);
-  cout<<"Registered successfully!\n";
-  break;
-  }
-}
-}
-
-void user_login(vector<sender_structure> &sender_vector,bool &global_user_logged,sender_structure *&current_user_pointer) {
-  string username;
-  cout << "Enter your username:";
-  getline(cin, username);
-  for (auto &sender : sender_vector) {
-    if (sender.username == username) {
-      current_user_pointer = &sender;
-      global_user_logged = true;
-      return;
+    // used this function inside user_register
+    const bool name_check(const vector<sender_structure>& sender_vector,string name) {
+        for (const auto& itr : sender_vector) {
+            if (name==itr.username) {
+                return true;
+            }
+        }
+        return false;
     }
-  }
-  global_user_logged = false;
-}
 
-const void user_display(const vector<sender_structure> &sender_vector){
-for(const auto itr : sender_vector){
-  cout<<itr.username;
-  cout<<",";
-}
-  cout<<"\n";
-}
+    void user_register(vector<sender_structure>& sender_vector) {
+        string name;
+        while (true) {
+            cout<<"Enter name to register: ";
+            getline(cin,name);
 
+            if (name.empty()) {
+                cout<<"Enter valid name to register!!\n";
+            }
+            else if (name_check(sender_vector,name)) {
+                cout<<"Username already exists. Try with a different name.\n";
+            }
+            else {
+                sender_structure sender_object;
+                sender_object.set_sender(name);
+                sender_vector.push_back(sender_object);
+                cout<<"Registered successfully!\n";
+                break;
+            }
+        }
+    }
+
+    void user_login(vector<sender_structure>& sender_vector,bool& is_global_user_logged,sender_structure*& current_user_pointer) {
+        string username;
+        cout<<"Enter your username: ";
+        getline(cin,username);
+        for (auto& sender : sender_vector) {
+            if (sender.username==username) {
+                current_user_pointer=&sender;
+                is_global_user_logged=true;
+                return;
+            }
+        }
+        is_global_user_logged=false;
+    }
+
+    const void user_display(const vector<sender_structure>& sender_vector) {
+        for (const auto& itr : sender_vector) {
+            cout<<itr.username;
+            cout<<",";
+        }
+        cout<<"\n";
+    }
+
+    void user_menu() {
+        cout<<"\n";
+        cout<<"-----MENU-----\n";
+        cout<<"1. REGISTER-new user.\n";
+        cout<<"2. LOGIN-existing user.\n";
+        cout<<"3. Display users.\n";
+        cout<<"4. EXIT.\n";
+        cout<<"Enter your choice: ";
+    }
 
 };
 
-class messageHandling{
+class messageHandling {
 public:
 
-const string timer() {
-  const auto now = chrono::system_clock::now();
-  time_t t = chrono::system_clock::to_time_t(now);
-  string timestamp = std::ctime(&t);
-  timestamp.pop_back();
-  return timestamp;
-}
-
-void send_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
-  string content;
-  cout<<"Enter message:";
-  getline(cin,content);
-  current_user_pointer->set_message(content,timer());
-  cout<<"Message sent successfully!\n";
-}
-
-const void view_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
-  for(const auto itr : sender_vector){
-    if(itr.username == current_user_pointer->username){
-      for(const auto itr : current_user_pointer->message )
-      cout<<itr.content<<" "<<"["<<itr.timestamp<<"]"<<"\n";
+    const string timer() {
+        const auto now=chrono::system_clock::now();
+        time_t t=chrono::system_clock::to_time_t(now);
+        string timestamp=std::ctime(&t);
+        timestamp.pop_back();
+        return timestamp;
     }
-  }
-}
 
-void edit_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
-  int display_index = 0;
-  int edit_index;
-  string content;
-  for(auto itr = current_user_pointer->message.begin();itr != current_user_pointer->message.end();++itr , display_index++){
-    cout<<"["<<display_index<<"]"<<itr->content;
-    cout<<"\n";
+    void send_message(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
+        string content;
+        string r_name;
+        cout<<"Enter recipient name:";
+        getline(cin,r_name);
+        for(auto &itr : sender_vector){
+          if(itr.username == r_name){
+            cout<<"Enter message:";
+            getline(cin,content);
+            itr.set_inbox(content,timer());
+            current_user_pointer->set_message(content,timer());
+            cout<<"Message sent successfully!\n";
+          }
+        }
   }
-  cout<<"Enter message index to edit:";
-  cin>>edit_index;
-  cin.ignore();
-  cout<<"Enter new message:";
-  getline(cin,content);
-  int index = 0;
-  for(auto &itr : current_user_pointer->message){
-    if(index == edit_index){
-      itr.content = content;
-      cout<<"Message edited successfully!\n";
-    }index++;
-  }
-}
+        
 
-void delete_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
-  int display_index = 0;
-  int delete_index;
-  string content;
-  for(auto itr = current_user_pointer->message.begin();itr != current_user_pointer->message.end();++itr , display_index++){
-    cout<<"["<<display_index<<"]"<<itr->content;
-    cout<<"\n";
-  }
-
-  cout<<"Enter message index to delete:";
-  cin>>delete_index;
-  int index = 0;
-  for(auto &itr : current_user_pointer->message){
-    if(index == delete_index){
-      current_user_pointer->message.erase(current_user_pointer->message.begin() + delete_index);
-      cout<<"Message deleted successfully!\n";
-    }index++;
-  }
-}
-
-void search_message(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
-  string keyword;
-  bool keyword_found = false;
-  cout<<"Enter keyword to search:";
-  getline(cin,keyword);
-  for(const auto &msg : current_user_pointer->message){
-    if(msg.content.find(keyword) != string::npos){
-    cout<<"message found:"<<msg.content<<"["<<msg.timestamp<<"]"<<"\n";
-    keyword_found=true;
+    const void view_message(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
+        for (const auto& itr : sender_vector) {
+            if (itr.username==current_user_pointer->username) {
+              cout<<"SENT MESSAGES:\n";
+                for(const auto &msg : current_user_pointer->message){
+                    cout<<msg.content<<" "<< "["<<msg.timestamp<<"]"<<"\n";}
+              cout<<"INBOX:\n";
+                for(const auto &ib : current_user_pointer->inbox){
+                  cout<<ib.content<<" "<< "["<<ib.timestamp<<"]"<<"\n";
+                }
+            }
+        }
     }
-  }
-if(!keyword_found){
-cout<<"message with \'"<<keyword<<"\' not found\n";
-}
-}
 
-void savefile(vector<sender_structure> &sender_vector,sender_structure* current_user_pointer){
-  ofstream savefilestream;
-  savefilestream.open(current_user_pointer->username+"_messages.txt");
-  for(const auto itr : current_user_pointer->message){
-  savefilestream<<itr.content<<"|"<<itr.timestamp<<"\n";
-  }
-  savefilestream.close();
-  cout<<"File saved!";
-}
+    void edit_message(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
+        int display_index=0;
+        int edit_index;
+        string content;
+        for (auto itr=current_user_pointer->message.begin();itr!=current_user_pointer->message.end();++itr,display_index++) {
+            cout<<"["<<display_index<<"]"<<itr->content;
+            cout<<"\n";
+        }
+        cout<<"Enter message index to edit: ";
+        cin>>edit_index;
+        cin.ignore();
+        cout<<"Enter new message: ";
+        getline(cin,content);
+        int index=0;
+        for (auto& itr : current_user_pointer->message) {
+            if (index==edit_index) {
+                itr.content=content;
+                cout<<"Message edited successfully!\n";
+                return; 
+            }
+            index++;
+        }
+        cout<<"Invalid index provided for editing.\n"; 
+    }
 
-void loadfile(vector<sender_structure> &sender_vec, sender_structure* current_user_pointer) {
+    void delete_message(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
+        int display_index=0;
+        int delete_index;
+        for (const auto& itr : current_user_pointer->message) {
+            cout<<"["<<display_index<<"]"<<itr.content;
+            cout<<"\n";
+            display_index++;
+        }
+
+        cout<<"Enter message index to delete: ";
+        cin>>delete_index;
+        cin.ignore(); 
+
+        if (delete_index<0||delete_index>=current_user_pointer->message.size()) { 
+            cout<<"Enter a valid index to delete\n";
+        }
+        else {
+            current_user_pointer->message.erase(current_user_pointer->message.begin()+delete_index);
+            cout<<"Message deleted successfully!\n";
+        }
+    }
+
+    void search_message(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
+        string keyword;
+        bool keyword_found=false;
+        cout<<"Enter keyword to search: ";
+        getline(cin,keyword);
+        for (const auto& msg : current_user_pointer->message) {
+            if (msg.content.find(keyword)!=string::npos) {
+                cout<<"Message found: "<<msg.content<<"["<<msg.timestamp<<"]"<<"\n";
+                keyword_found=true;
+            }
+        }
+        if (!keyword_found) {
+            cout<<"Message with \'"<<keyword<<"\' not found\n";
+        }
+    }
+
+    void savefile(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
+        ofstream savefilestream;
+        savefilestream<<"SENT_MESSAGES\n";
+        for(const auto& msg : current_user_pointer->message) {
+        savefilestream<<msg.content<<"|"<<msg.timestamp<<"\n";
+        }
+
+        savefilestream << "INBOX_MESSAGES\n";
+         for(const auto& msg : current_user_pointer->inbox) {
+        savefilestream<<msg.content<<"|"<<msg.timestamp<<"\n";
+        savefilestream.close();
+        cout<<"File saved!\n"; 
+        }
+    }
+    void loadfile(vector<sender_structure>& sender_vector, sender_structure* current_user_pointer) {
+    ifstream loadfilestream(current_user_pointer->username + "_messages.txt");
     string content, timestamp, lineread;
-    ifstream loadfilestream(current_user_pointer->username+"_messages.txt");
+    bool is_inbox_section = false;
+    
     if (!loadfilestream.is_open()) {
         cout << "Failed to load messages" << endl;
         return;
     }
-    while(getline(loadfilestream, lineread)) {
+
+    while (getline(loadfilestream, lineread)) {
+        if (lineread == "SENT_MESSAGES") {
+            is_inbox_section = false;
+            continue;
+        } else if (lineread == "INBOX_MESSAGES") {
+            is_inbox_section = true;
+            continue;
+        }
+
         size_t delimiter_position = lineread.find("|");
-        if (delimiter_position != string::npos) { 
+        if (delimiter_position != string::npos) {
             content = lineread.substr(0, delimiter_position);
             timestamp = lineread.substr(delimiter_position + 1);
-            current_user_pointer->set_message(content, timestamp);
+            if (is_inbox_section) {
+                current_user_pointer->set_inbox(content, timestamp);
+            } else {
+                current_user_pointer->set_message(content, timestamp);
+            }
         }
     }
     loadfilestream.close();
     cout << "Messages loaded!" << endl;
 }
 
+
+    void msg_menu() {
+        cout<<"\n-----MENU-----\n";
+        cout<<"1. Send Messages.\n";
+        cout<<"2. View Messages.\n";
+        cout<<"3. Search Message.\n";
+        cout<<"4. Edit Message.\n";
+        cout<<"5. Delete Message.\n";
+        cout<<"6. Save & Exit.\n";
+        cout<<"Enter your choice: ";
+    }
+
 };
 
-void user_menu() {
-  cout << "\n";
-  cout << "-----MENU-----\n";
-  cout << "1.REGISTER-new user.\n";
-  cout << "2.LOGIN-existing user.\n";
-  cout << "3.Display users.\n";
-  cout << "4.EXIT.\n";
-  cout << "Enter your choice:";
-}
-void msg_menu() {
-  cout<<"\n-----MENU-----\n";
-  cout<<"1.Send Messages.\n";
-  cout<<"2.View Messages.\n";
-  cout<<"3.Search Message.\n";
-  cout<<"4.Edit Message.\n";
-  cout<<"5.Delete Message.\n";
-  cout<<"6.Save & Exit.\n";
-  cout<<"Enter your choice: ";
-}
-
-
 int main() {
-  int user_choice;
-  int msg_choice;
-  bool global_user_logged = false;
-  vector<sender_structure> sender_vector;
-  sender_structure *current_user_pointer = nullptr;
-  
-  userHandling userHandlingObject;
-  messageHandling messageHandlingObject;
-  
-  // user_menu_do
-  do {
-    user_menu();
-    cin >> user_choice;
-    cin.ignore();
-    switch (user_choice) {
-    case 1:
-      userHandlingObject.user_register(sender_vector);
-      break;
+    int user_choice;
+    int msg_choice;
+    bool is_global_user_logged=false;
+    bool is_return_to_user_menu=false;
+    vector<sender_structure> sender_vector;
+    sender_structure* current_user_pointer=nullptr;
 
-    case 2:
-      userHandlingObject.user_login(sender_vector, global_user_logged, current_user_pointer);
-      if(global_user_logged){
-      messageHandlingObject.loadfile(sender_vector,current_user_pointer);
-      cout<<"LOGIN SUCCESSFULL!\n";
-      }
-      else{
-        cout<<"LOGIN FAILED!\n";
-      }
-      break;
+    userHandling userHandlingObject;
+    messageHandling messageHandlingObject;
 
-    case 3:
-      userHandlingObject.user_display(sender_vector);
-      break;
-    case 5:
-      cout << "Exited program.";
-      return 0;
-    }
-  } while (!global_user_logged);
+    // user_menu_do
+    do {
+        userHandlingObject.user_menu();
+        cin>>user_choice;
+        cin.ignore();
+        switch (user_choice) {
+            case 1:
+                userHandlingObject.user_register(sender_vector);
+                break;
 
-  //msg_menu_do
-  do {
-    msg_menu();
-    cin >> msg_choice;
-    cin.ignore();
-    switch (msg_choice) {
-      case 1:
-      messageHandlingObject.send_message(sender_vector,current_user_pointer);
-      break;
+            case 2:
+                userHandlingObject.user_login(sender_vector,is_global_user_logged,current_user_pointer);
+                if (is_global_user_logged) {
+                    messageHandlingObject.loadfile(sender_vector,current_user_pointer);
+                    cout<<"LOGIN SUCCESSFUL!\n";                 }
+                else {
+                    cout<<"LOGIN FAILED!\n";
+                }
+                break;
 
-      case 2:
-      messageHandlingObject.view_message(sender_vector,current_user_pointer);
-      break;
-      
-      case 3:
-      messageHandlingObject.search_message(sender_vector,current_user_pointer);
-      break;
+            case 3:
+                userHandlingObject.user_display(sender_vector);
+                break;
+            case 4: 
+                cout<<"Exited program.";
+                return 0;
+        }
+    } while (!is_global_user_logged);
 
-      case 4:
-      messageHandlingObject.edit_message(sender_vector,current_user_pointer);
-      break;
-      
-      case 5:
-      messageHandlingObject.delete_message(sender_vector,current_user_pointer);
-      break;
-    
-      case 6:
-      messageHandlingObject.savefile(sender_vector,current_user_pointer);
-      break;
-    }
-  } while (msg_choice != 6);
+    // msg_menu_do
+    do {
+        messageHandlingObject.msg_menu();
+        cin>>msg_choice;
+        cin.ignore();
+        switch (msg_choice) {
+            case 1:
+                messageHandlingObject.send_message(sender_vector,current_user_pointer);
+                break;
+
+            case 2:
+                messageHandlingObject.view_message(sender_vector,current_user_pointer);
+                break;
+
+            case 3:
+                messageHandlingObject.search_message(sender_vector,current_user_pointer);
+                break;
+
+            case 4:
+                messageHandlingObject.edit_message(sender_vector,current_user_pointer);
+                break;
+
+            case 5:
+                messageHandlingObject.delete_message(sender_vector,current_user_pointer);
+                break;
+
+            case 6:
+                messageHandlingObject.savefile(sender_vector,current_user_pointer);
+                cout<<"Exiting message menu.\n"; 
+                return 0; 
+        }
+    } while (true); 
 }
-
-
