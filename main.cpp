@@ -119,6 +119,9 @@ public:
             current_user_pointer->set_message(content,timer());
             cout<<"Message sent successfully!\n";
           }
+          else{
+            cout<<"Recipient doesnt exist.\n";
+          }
         }
   }
         
@@ -238,7 +241,7 @@ public:
     cout<<"Sent messages loaded.\n";
 
     ifstream load_inboxfilestream(current_user_pointer->username +"_inbox_messages.txt");
-    
+
     if(!load_inboxfilestream.is_open()){
       cout<<"Failed to load inbox messages.\n";
       return;
@@ -272,9 +275,7 @@ public:
 
 int main() {
     int user_choice;
-    int msg_choice;
     bool is_global_user_logged=false;
-    bool is_return_to_user_menu=false;
     vector<sender_structure> sender_vector;
     sender_structure* current_user_pointer=nullptr;
 
@@ -295,7 +296,42 @@ int main() {
                 userHandlingObject.user_login(sender_vector,is_global_user_logged,current_user_pointer);
                 if (is_global_user_logged) {
                     messageHandlingObject.loadfile(sender_vector,current_user_pointer);
-                    cout<<"LOGIN SUCCESSFUL!\n";                 }
+                    cout<<"LOGIN SUCCESSFUL!\n";
+
+                    // msg_menu_do
+                    int msg_choice;
+                     do {
+                      messageHandlingObject.msg_menu();
+                      cin>>msg_choice;
+                      cin.ignore();
+                      switch (msg_choice) {
+                          case 1:
+                              messageHandlingObject.send_message(sender_vector,current_user_pointer);
+                              break;
+
+                          case 2:
+                              messageHandlingObject.view_message(sender_vector,current_user_pointer);
+                              break;
+
+                          case 3:
+                              messageHandlingObject.search_message(sender_vector,current_user_pointer);
+                              break;
+
+                          case 4:
+                              messageHandlingObject.edit_message(sender_vector,current_user_pointer);
+                              break;
+
+                          case 5:
+                              messageHandlingObject.delete_message(sender_vector,current_user_pointer);
+                              break;
+
+                          case 6:
+                              messageHandlingObject.savefile(sender_vector,current_user_pointer);
+                              cout<<"Exiting message menu.\n"; 
+                              break;
+                              }
+                            } while (msg_choice != 6); 
+                    }
                 else {
                     cout<<"LOGIN FAILED!\n";
                 }
@@ -308,38 +344,5 @@ int main() {
                 cout<<"Exited program.";
                 return 0;
         }
-    } while (!is_global_user_logged);
-
-    // msg_menu_do
-    do {
-        messageHandlingObject.msg_menu();
-        cin>>msg_choice;
-        cin.ignore();
-        switch (msg_choice) {
-            case 1:
-                messageHandlingObject.send_message(sender_vector,current_user_pointer);
-                break;
-
-            case 2:
-                messageHandlingObject.view_message(sender_vector,current_user_pointer);
-                break;
-
-            case 3:
-                messageHandlingObject.search_message(sender_vector,current_user_pointer);
-                break;
-
-            case 4:
-                messageHandlingObject.edit_message(sender_vector,current_user_pointer);
-                break;
-
-            case 5:
-                messageHandlingObject.delete_message(sender_vector,current_user_pointer);
-                break;
-
-            case 6:
-                messageHandlingObject.savefile(sender_vector,current_user_pointer);
-                cout<<"Exiting message menu.\n"; 
-                return 0; 
-        }
-    } while (true); 
+    } while (true);
 }
