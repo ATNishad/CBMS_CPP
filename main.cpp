@@ -201,51 +201,59 @@ public:
     }
 
     void savefile(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
-        ofstream savefilestream;
-        savefilestream<<"SENT_MESSAGES\n";
+        ofstream save_sentfilestream;
+        save_sentfilestream.open(current_user_pointer->username+"_sent_messages.txt");
         for(const auto& msg : current_user_pointer->message) {
-        savefilestream<<msg.content<<"|"<<msg.timestamp<<"\n";
+        save_sentfilestream<<msg.content<<"|"<<msg.timestamp<<"\n";
         }
+        save_sentfilestream.close();
 
-        savefilestream << "INBOX_MESSAGES\n";
+        ofstream save_inboxfilestream;
+        save_inboxfilestream.open(current_user_pointer->username+"_inbox_messages.txt");
          for(const auto& msg : current_user_pointer->inbox) {
-        savefilestream<<msg.content<<"|"<<msg.timestamp<<"\n";
-        savefilestream.close();
+        save_inboxfilestream<<msg.content<<"|"<<msg.timestamp<<"\n";
+        }
+        save_inboxfilestream.close();
         cout<<"File saved!\n"; 
         }
-    }
+
     void loadfile(vector<sender_structure>& sender_vector, sender_structure* current_user_pointer) {
-    ifstream loadfilestream(current_user_pointer->username + "_messages.txt");
-    string content, timestamp, lineread;
-    bool is_inbox_section = false;
-    
-    if (!loadfilestream.is_open()) {
-        cout << "Failed to load messages" << endl;
+    ifstream load_sentfilestream(current_user_pointer->username + "_sent_messages.txt");
+    string content,timestamp,lineread;
+
+    if (!load_sentfilestream.is_open()) {
+        cout<<"Failed to load sent messages.\n";
         return;
     }
 
-    while (getline(loadfilestream, lineread)) {
-        if (lineread == "SENT_MESSAGES") {
-            is_inbox_section = false;
-            continue;
-        } else if (lineread == "INBOX_MESSAGES") {
-            is_inbox_section = true;
-            continue;
-        }
-
+    while(getline(load_sentfilestream, lineread)) {
         size_t delimiter_position = lineread.find("|");
         if (delimiter_position != string::npos) {
             content = lineread.substr(0, delimiter_position);
             timestamp = lineread.substr(delimiter_position + 1);
-            if (is_inbox_section) {
-                current_user_pointer->set_inbox(content, timestamp);
-            } else {
-                current_user_pointer->set_message(content, timestamp);
-            }
+            current_user_pointer->set_message(content,timestamp);
         }
     }
-    loadfilestream.close();
-    cout << "Messages loaded!" << endl;
+    load_sentfilestream.close();
+    cout<<"Sent messages loaded.\n";
+
+    ifstream load_inboxfilestream(current_user_pointer->username +"_inbox_messages.txt");
+    
+    if(!load_inboxfilestream.is_open()){
+      cout<<"Failed to load inbox messages.\n";
+      return;
+    }
+
+    while(getline(load_inboxfilestream,lineread)){
+      size_t delimiter_pos = lineread.find("|");
+      if(delimiter_pos != string::npos){
+        content=lineread.substr(0,delimiter_pos);
+        timestamp=lineread.substr(delimiter_pos + 1);
+        current_user_pointer->set_inbox(content,timestamp);
+      }
+    }
+    load_inboxfilestream.close();
+    cout << "Inbox messages loaded!" << endl;
 }
 
 
