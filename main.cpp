@@ -4,7 +4,6 @@
 #include <iterator>
 #include <vector>
 #include <fstream>
-#include <map>
 using namespace std;
 
 struct message_structure {
@@ -17,7 +16,6 @@ struct sender_structure {
     string username;
     vector<message_structure> inbox;
     vector<message_structure> message;
-    map<string, vector<message_structure>> conversations;
 
     void set_sender(string name) { this->username=name; }
     void set_message(string content, string timestamp) {
@@ -111,18 +109,20 @@ public:
     void send_message(vector<sender_structure>& sender_vector,sender_structure* current_user_pointer) {
         string content;
         string r_name;
+        bool found;
         cout<<"Enter recipient name:";
         getline(cin,r_name);
         for(auto &itr : sender_vector){
           if(itr.username == r_name){
+            found=true;
             cout<<"Enter message:";
             getline(cin,content);
-            message_structure new_message(content,timer());
-            current_user_pointer->conversations[r_name].push_back(new_message);
-            itr.inbox.push_back(new_message);
+            current_user_pointer->set_message(content,timer());
+            itr.set_inbox(content,timer());
             cout<<"Message sent successfully!\n";
+            break;
           }
-          else{
+          if(!found){
             cout<<"Recipient doesnt exist.\n";
           }
         }
