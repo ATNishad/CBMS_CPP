@@ -2,7 +2,7 @@
 
 A simple console-based messaging app built with C++ that supports user registration, login, message sending, and data persistence through file storage.
 
-> **Note**: This project is a work in progress and is currently on hold due to other project priorities and software limitations.
+> **Note**: This project is a work in progress and is not entirely complete.
 
 ## Features
 
